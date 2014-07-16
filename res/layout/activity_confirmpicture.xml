@@ -1,0 +1,76 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/setbackground"
+    tools:context=".ConfirmPicture" >
+    
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:gravity="center">
+	        
+            <ImageView
+                android:id="@+id/sureisnomal"
+                android:src="@drawable/sureisnomal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="103dp"
+                android:layout_centerHorizontal="true" />
+            
+		    <FrameLayout 
+			    android:id="@+id/surepreview"
+			    android:layout_height="wrap_content"
+			    android:layout_width="wrap_content"
+			    android:layout_below="@id/sureisnomal"
+			    android:layout_marginTop="20dp"
+			    android:layout_centerInParent="true">
+			    <ImageView
+		            android:src="@drawable/yellowframe"
+		            android:layout_width="510dp"
+		            android:layout_height="410dp"
+		            android:layout_gravity="center"/>
+		        <ImageView
+		            android:id="@+id/dataimage"
+		            android:src="@drawable/yellowframe"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_gravity="center"/>
+		        
+			</FrameLayout>
+		    <LinearLayout 
+		        android:id="@+id/surebuttons"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="25dp">
+		        <ImageButton
+	                android:id="@+id/suresubmit"
+	                android:src="@drawable/suresubmitselector"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:onClick="submit"/>
+		        <ImageButton
+	                android:id="@+id/surereset"
+	                android:src="@drawable/sureresetselector"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginLeft="55dp"
+	                android:onClick="reset"/>
+		    </LinearLayout>
+            
+            <ImageView
+            	android:id="@+id/next"
+                android:src="@drawable/next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/surebuttons"
+                android:layout_marginBottom="12dp"
+                android:layout_centerHorizontal="true"/>
+
+	</RelativeLayout>
+</RelativeLayout>

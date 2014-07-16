@@ -1,0 +1,81 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/setbackground"
+    tools:context=".FinalPicture" >
+    
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:gravity="center">
+	        
+            <ImageView
+                android:id="@+id/beforelable"
+                android:src="@drawable/before"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="103dp"
+                android:layout_centerHorizontal="true" />
+            
+		    <FrameLayout 
+			    android:id="@+id/finalpreview"
+			    android:layout_height="wrap_content"
+			    android:layout_width="wrap_content"
+			    android:layout_below="@id/beforelable"
+			    android:layout_marginTop="10dp"
+			    android:layout_centerInParent="true">
+			    <ImageView
+		            android:src="@drawable/finalframe"
+		            android:layout_width="510dp"
+		            android:layout_height="410dp"
+		            android:layout_gravity="center"/>
+		        <ImageView
+		            android:id="@+id/finaldataimage"
+		            android:src="@drawable/finalframe"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_gravity="center"/>
+		        
+			</FrameLayout>
+			
+		    <LinearLayout 
+		        android:id="@+id/finalsubmitinputs"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:orientation="vertical"
+                android:layout_marginBottom="25dp">
+		        <EditText 
+		            android:id="@+id/imagecode"
+		            android:background="@drawable/imagecodeinput"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:paddingLeft="4dp"
+			        android:hint="输入图样编号"
+	                android:layout_gravity="center_horizontal"/>
+		        <EditText 
+		            android:id="@+id/imagename"
+		            android:background="@drawable/imagecodeinput"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:paddingLeft="4dp"
+			        android:hint="输入图样名称"
+	                android:layout_gravity="center_horizontal"/>
+		        <ImageButton
+	                android:id="@+id/finalsubmit"
+	                android:src="@drawable/finalsubmitselector"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_gravity="center_horizontal"
+	                android:onClick="submit"/>
+		    </LinearLayout>
+            
+            
+
+	</RelativeLayout>
+</RelativeLayout>
