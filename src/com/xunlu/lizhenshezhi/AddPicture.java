@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
+import android.graphics.Bitmap.CompressFormat;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -92,7 +93,10 @@ public class AddPicture extends Activity{
         public void onPictureTaken(byte[] data, Camera camera) {  
         	String path = initPath();
         	try {
-				data2file(data, path);
+				Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            	bitmap = ImageUtil.filterBitmap(bitmap);
+            	bitmap.compress(CompressFormat.JPEG, 80, new FileOutputStream(path));
+            	bitmap.recycle();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

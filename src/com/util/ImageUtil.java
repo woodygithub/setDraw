@@ -2,20 +2,27 @@ package com.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.jar.JarEntry;
 
+import android.R.integer;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.os.Environment;
+import android.util.Log;
 
 import com.date.ListMap;
 
 public class ImageUtil {
-	/**
+/**
 	 * 压缩图片
 	 * @param bitmap
 	 * @param width
@@ -71,23 +78,25 @@ public class ImageUtil {
 	    return result;
 	}
 	
+	public static long getGrayPercent(Bitmap bm) throws Exception{
+		return getPixCount(bm);
+	}
 	/**
-	 * 获取灰点占图中百分比
+	 * 获取图中所有像素累加值
 	 * @return percent
 	 * @throws Exception 
 	 */
-	public static long getGrayPercent(Bitmap bm, int value) throws Exception{
+	public static long getPixCount(Bitmap bm) throws Exception{
 		Bitmap grayBm = ImageUtil.bitmap2Gray(bm);
-		Bitmap Bm = grayBm;
 		long gotPoint = 0;
 		long percent = 0;
-		if (Bm!=null)
+		if (grayBm!=null)
 		{
-			int h = Bm.getHeight();
-			int w = Bm.getWidth();
+			int h = grayBm.getHeight();
+			int w = grayBm.getWidth();
 			for (int y = 0; y < h; y++) {
 				for (int x = 0; x < w; x++) {
-					int color = Bm.getPixel(x, y);
+					int color = grayBm.getPixel(x, y);
 					int r = Color.red(color);
 					int g = Color.green(color);
 					int b = Color.blue(color);
@@ -98,27 +107,44 @@ public class ImageUtil {
 		}
 		return percent;
 	}
+	/**将拍照得到的图像的多余的部分割去 */
+	public static Bitmap filterBitmap(Bitmap in){
+		int inWidth=in.getWidth(),inHeight=in.getHeight();
+		Bitmap filter = Bitmap.createBitmap(in, inWidth*3/16, inHeight * 9 /160, inWidth*11/16, inHeight * 38 /60);
+		in.recycle();
+		return filter;
+	}
 	/**
 	 * 根据图像的灰度方差值计算分数，纯白或纯黑或纯一色的分数最低
 	 * @return 分数（60-100）
 	 */
-	public static int gradeBitmap(Bitmap in){
-		//先将图像按3x3切割，得到9块后对每一块进行方差计算，再对9个值取平均既是结果
+	public static int gradeBitmap(Bitmap filter){
+//		int inWidth=in.getWidth(),inHeight=in.getHeight();
+//		Bitmap filter = Bitmap.createBitmap(in, inWidth*3/16, inHeight * 3 /80, inWidth*8/16, inHeight * 16 /30);
+		//先将图像按2x2切割，得到多块后对每一块进行方差计算，再对值取平均既是结果
 		//这样可以避免有的图像仅部分完全涂黑剩下留白而获得高分
-		int xSize=3,ySize=3;
-		int widthUnit=in.getWidth()/xSize;
-		int heightUnit=in.getHeight()/ySize;
+		int xSize=2,ySize=2;
+		int widthUnit=filter.getWidth()/xSize;
+		int heightUnit=filter.getHeight()/ySize;
 		ArrayList<Bitmap> cutedList=new ArrayList<Bitmap>();
 		for(int x=0 ; x<xSize ; x++){
 			for(int y=0 ; y<ySize ; y++){
-				Bitmap bitmap = Bitmap.createBitmap(in, xSize*widthUnit, ySize*heightUnit, widthUnit, heightUnit);
+				Bitmap bitmap = Bitmap.createBitmap(filter, x*widthUnit, y*heightUnit, widthUnit, heightUnit);
 				cutedList.add(bitmap);
 			}
 		}
 		int scoreSum = 0;
 		for(Bitmap cuted:cutedList){
 			scoreSum+=gradeBitmapReal(cuted);
+			cuted.recycle();
 		}
+//		try {
+//			File outputFile = new File(initPath().replace("gray.jpg", "filter.jpg"));
+//			filter.compress(CompressFormat.JPEG, 80, new FileOutputStream(outputFile));
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
+		filter.recycle();
 		return scoreSum/cutedList.size();
 	}
 	/**
@@ -140,8 +166,9 @@ public class ImageUtil {
 			    int blue = Color.blue(color); //color & 0x000000FF;
 			    int gray = (red*30+green*59+blue*11)/100;//不用float的原因：int计算提高性能
 //			    gray = ((float)gray*1.4f) > 255f ? 255 : (int)((float)gray*1.4f);
-			    gray = Math.min(255, gray);
-			    
+			    gray = Math.min(100, gray);//底色是100的灰度
+//			    gray-=100;//底色是100的灰度
+//			    gray = Math.max(0, gray);
 			    sum+=gray;
 			    squareSum+=(gray*gray);
 		    }
@@ -149,12 +176,14 @@ public class ImageUtil {
 	    long average = sum/n ;
 	    long squareAverage = squareSum/n ;
 	    long dx = squareAverage - average * average;//方差D（X)=E[X^2]-[E(x)]^2 "平方的平均减去平均的平方"
-	   
-	    int maxDx = 127*127; //理论最大方差，一半黑一半白图像分最高
+	    int maxDx = 50*50; //理论最大方差，一半黑一半白图像分最高
+	    maxDx/=2;//降低上限基准，这样分数会打得高一点
 //	    int minDx = 0;//理论最小方差,纯色图片分最低
 	    
-	    int score = (int) (dx * 40 / maxDx + 60);
+	    int score = (int) (dx * 40 / maxDx + 50);
+//		Log.d("gradeBitmapReal", "score"+score+",dx="+dx+",squareAverage="+squareAverage+",average="+average);
 	    if(score > 100) score = 100;
+	    if(score <60) score =60;
 	    return score;
 	}
 	

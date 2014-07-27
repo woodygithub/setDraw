@@ -202,7 +202,7 @@ public class XianShiDafen extends Activity {
 		public void run() {
 			Log.e("genegen", "我去获取分数了-----");
 			try {
-				long percent = ImageUtil.getGrayPercent(bitmap, 0);
+				long percent = ImageUtil.getGrayPercent(bitmap);
 				String path = AllPath.Get();
 			    String result = Threads.GetINPutStream(path,bianhao,percent);
 				Thread.sleep(1000);
