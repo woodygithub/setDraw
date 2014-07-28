@@ -13,6 +13,9 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -66,7 +69,7 @@ public class FinalPicture extends Activity {
 		ArrayList<String> uris = reqIntent.getStringArrayListExtra("Uris");
 		long zPercent = 0;
 		try {
-			zPercent = ImageUtil.getGrayPercent(bitmap, 0);
+			zPercent = ImageUtil.gradeBitmap(bitmap);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -80,8 +83,12 @@ public class FinalPicture extends Activity {
 			e.printStackTrace();
 		}
 		new Thread(new HttpThread(pairMap)).start();
-		
+		if(pd==null){
+			pd=new ProgressDialog(this);
+			pd.show();
+		}
 	}
+	ProgressDialog pd;
 	
 	private class HttpThread implements Runnable{
 		List<NameValuePair> pairList;
@@ -94,16 +101,16 @@ public class FinalPicture extends Activity {
 
 		@Override
 		public void run() {
+			Looper looper = Looper.getMainLooper();
+			Handler handler = new showHandler(looper);
 			
 			try {
 				boolean isSuccess = Threads.setRegion(AllPath.Get(), this.pairMap);
-				Looper looper = Looper.getMainLooper();
-				Handler handler = new showHandler(looper);
 				Message msg = Message.obtain();
 				if(isSuccess){
 					msg.what=1;
-					handler.sendMessage(msg);
 				}
+				handler.sendMessage(msg);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -112,7 +119,6 @@ public class FinalPicture extends Activity {
 	}
 	
 	private class showHandler extends Handler{
-
 		public showHandler() {
 			super();
 		}
@@ -132,10 +138,19 @@ public class FinalPicture extends Activity {
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
+			pd.dismiss();
 			if(msg.what==1){
-				Toast.makeText(FinalPicture.this, "已完成", Toast.LENGTH_LONG).show();
-				
-				FinalPicture.this.finish();
+				new AlertDialog.Builder(FinalPicture.this).setTitle("提示")
+						.setMessage("已完成")
+						.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener(){
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								startActivity(new Intent(FinalPicture.this, ShezhiActivity.class)
+										.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+							}
+						}).show();
+			}else{
+				Toast.makeText(FinalPicture.this, "上传失败", Toast.LENGTH_LONG).show();
 			}
 		}
 	}

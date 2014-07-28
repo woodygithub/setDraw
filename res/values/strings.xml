@@ -3,7 +3,7 @@
 
     <string name="app_names">儿童绘画打分系统</string>
     <string name="action_settings">Settings</string>
-    <string name="app_name">儿童绘画打分设置系统</string>
+    <string name="app_name">打分设置</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="scan_text">将二维码放入框内, 即可自动扫描</string>

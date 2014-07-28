@@ -232,7 +232,7 @@ public class ShezhiActivity extends Activity {
 			if(ShezhiActivity.CAMERA_Z_CODE==requestCode ){
 				try {
 					
-					zPercent = ImageUtil.getGrayPercent(bitmap, value);
+					zPercent = ImageUtil.gradeBitmap(bitmap);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

@@ -84,44 +84,7 @@ public class XianShiDafen extends Activity {
 		}else{
 			return;
 		}
-		long avgNum = 0;
-		if (newBitmap != null)
-		{
-
-			SharedPreferences.Editor spfEditer;
-			SharedPreferences spf;
-			spf = ((Context)this).getSharedPreferences("shezhiValue", 0);
-			spfEditer = spf.edit();
-			int value = 450;
-			if (spf.getString("ic", "").equals("1")) {
-				value = spf.getInt("value", 450);
-			}
-			try {
-				if(uris!=null){
-					for (int i = 0; i < uris.size(); i++) {
-						String pathString = uris.get(i);
-						if (pathString==null){
-							break;
-						}
-						if(pathString.length()<1){
-							break;
-						}
-			            Bitmap tmpBmp = ImageUtil.zoomBitmap(bitmap, bitmap.getWidth()/6, bitmap.getHeight()/6);
-			            long tmp = ImageUtil.getGrayPercent(tmpBmp, value);
-						if(avgNum ==0){
-							avgNum = tmp;
-						}else{
-							avgNum = (avgNum+tmp)/2;
-						}
-					}
-				}else{
-					Bitmap tmpBmpBitmap = ImageUtil.zoomBitmap(bitmap, bitmap.getWidth()/6, bitmap.getHeight()/6);
-					avgNum = ImageUtil.getGrayPercent(tmpBmpBitmap, value);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+		Bitmap tmpBmpBitmap = ImageUtil.zoomBitmap(bitmap, bitmap.getWidth()/6, bitmap.getHeight()/6);
 
 		handler1.post(thread);
 //		if(null != ListMap.getLb().get(0)){
@@ -142,7 +105,7 @@ public class XianShiDafen extends Activity {
 		if (scanResult!=null){
 			if(scanResult.length()>0){
 				Log.e("::::::", scanResult.length()+"");
-				new Thread(new GetFen(reqInetIntent.getExtras().getString("scan_result"), avgNum)).start();
+				new Thread(new GetFen(reqInetIntent.getExtras().getString("scan_result"), tmpBmpBitmap)).start();
 			}
 		}
 	}
@@ -229,29 +192,17 @@ public class XianShiDafen extends Activity {
 	// }
 	class GetFen implements Runnable{
         String bianhao;
-        long percent;
-        public GetFen(String bianhao) {
+        Bitmap bitmap;
+        public GetFen(String bianhao, Bitmap bitmap) {
 			super();
 			this.bianhao = bianhao;
-		}
-        public GetFen(int bianhao) {
-			super();
-			this.bianhao = String.valueOf(bianhao);
-		}
-        public GetFen(String bianhao, long percent) {
-			super();
-			this.bianhao = bianhao;
-			this.percent = percent;
-		}
-        public GetFen(int bianhao, long percent) {
-			super();
-			this.bianhao = String.valueOf(bianhao);
-			this.percent = percent;
+			this.bitmap = bitmap;
 		}
 		@Override
 		public void run() {
 			Log.e("genegen", "我去获取分数了-----");
 			try {
+				long percent = ImageUtil.getGrayPercent(bitmap);
 				String path = AllPath.Get();
 			    String result = Threads.GetINPutStream(path,bianhao,percent);
 				Thread.sleep(1000);
@@ -272,7 +223,7 @@ public class XianShiDafen extends Activity {
 						}
 					}
 				};
-				long gd = grade(f, max,percent);
+				long gd = ImageUtil.gradeBitmap(bitmap);//grade(f, max,percent);
 				Message msg = Message.obtain();
 				msg.what=1;
 				msg.obj=Long.valueOf(gd);
